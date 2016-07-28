@@ -3,7 +3,7 @@
 ## the matrix has already been solved in cacheSolve, the solution can be pulled
 ## from the cache instead of having to recalculate it.  If this were part of a
 ## loop this could save processing time as the inverse would only have to be
-## solved once during the loop provided the vector x did not change.
+## solved once during the loop provided the matrix x did not change.
 
 
 ## makeCacheMatrix sets up variables that will store the matrix X and the inverse
@@ -11,17 +11,17 @@
 ## by cacheSolve.
 
 makeCacheMatrix <- function(x = matrix()) {
-     i <- NULL
-     set <- function(y) {
-     x <<- y
-     i <<- NULL
-     }
-     get <- function() x
-     setinverse <- function(inverse) i <<- inverse
-     getinverse <- function() i
-     list(set = set, get = get,
-          setinverse = setinverse,
-          getinverse = getinverse)
+        i <- NULL
+        set <- function(y) {
+                x <<- y
+                i <<- NULL
+        }
+        get <- function() x
+        setinverse <- function(inverse) i <<- inverse
+        getinverse <- function() i
+        list(set = set, get = get,
+                setinverse = setinverse,
+                getinverse = getinverse)
 }
 
 
@@ -32,13 +32,32 @@ makeCacheMatrix <- function(x = matrix()) {
 ## setinverse.
 
 cacheSolve <- function(x, ...) {
-     i <- x$getinverse()
-     if(!is.null(i)) {
-          message("getting cached data")
-          return(i)
-     }
-     data <- x$get()
-     i <- solve(data, ...)
-     x$setinverse(i)
-     i
+        i <- x$getinverse()
+        if(!is.null(i)) {
+                message("getting cached data")
+                return(i)
+        }
+        data <- x$get()
+        i <- solve(data, ...)
+        x$setinverse(i)
+        i
 }
+
+
+## Test of functions to solve inverse for provided matrix x:
+
+## > x = matrix(c(4, 2, 7, 6), nrow = 2, ncol = 2)
+## > m = makeCacheMatrix(x)
+## > m$get()
+##      [,1] [,2]
+## [1,]    4    7
+## [2,]    2    6
+## > cacheSolve(m)
+##      [,1] [,2]
+## [1,]  0.6 -0.7
+## [2,] -0.2  0.4
+## > cacheSolve(m)
+## getting cached data
+##      [,1] [,2]
+## [1,]  0.6 -0.7
+## [2,] -0.2  0.4
